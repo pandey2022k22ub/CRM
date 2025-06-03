@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
-const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_URL) || 'http://localhost:5000/api';
+const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_URL) || 'https://crm-91or.onrender.com/api';
 
 export const createSegment = async (segmentData) => {
   const response = await axios.post(`${API_BASE}/segments`, segmentData);

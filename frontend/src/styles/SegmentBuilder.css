@@ -1,0 +1,36 @@
+.segment-builder {
+  background: #fdfdfd;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.segment-builder h2, .segment-builder h3 {
+  color: #333;
+}
+
+.segment-builder form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.segment-builder input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.segment-builder button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.segment-builder button:hover {
+  background-color: #0056b3;
+}

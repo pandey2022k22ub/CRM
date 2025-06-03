@@ -1,0 +1,18 @@
+.rule-builder {
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.rule-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rule-row select,
+.rule-row input {
+  padding: 0.4rem;
+  font-size: 1rem;
+}

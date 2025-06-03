@@ -1,0 +1,21 @@
+.campaign-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.campaign-form button {
+  margin-top: 1rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.campaign-form button:hover {
+  background: #388e3c;
+}

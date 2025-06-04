@@ -1,6 +1,6 @@
 const express = require('express');
 const Campaign = require('../models/Campaign');
-const Segment = require('../models/Segment'); // ✅ needed for audienceSize
+const Segment = require('../models/Segment');
 const router = express.Router();
 
 // GET campaigns for user
@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
     const segment = await Segment.findById(segmentId);
     if (!segment) return res.status(404).json({ error: 'Segment not found' });
 
-    const audienceSize = segment.rules.length * 100; // Optional logic; can replace with actual audienceSize if stored
+    const audienceSize = segment.rules.length * 100; 
     const campaign = new Campaign({
       name,
       segmentId,

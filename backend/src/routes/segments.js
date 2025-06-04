@@ -1,5 +1,5 @@
 const express = require('express');
-const Segment = require('../models/Segment'); // ✅ Ensure this model exists
+const Segment = require('../models/Segment'); 
 const router = express.Router();
 
 // GET segments by userId

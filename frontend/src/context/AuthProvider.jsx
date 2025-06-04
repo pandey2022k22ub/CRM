@@ -1,4 +1,4 @@
-// ================== context/AuthProvider.jsx ==================
+
 import React, { createContext, useState, useEffect } from 'react';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';

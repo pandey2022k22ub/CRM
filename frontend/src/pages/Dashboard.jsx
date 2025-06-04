@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getAllSegments } from '../api/segmentApi'; // ✅ FIX PATH BASED ON YOUR STRUCTURE
+import { getAllSegments } from '../api/segmentApi'; 
 
 import useAuth from '../hooks/useAuth';
 import SegmentBuilder from '../components/SegmentBuilder';
 import CampaignList from '../components/CampaignList';
+import CampaignForm from '../components/CampaignForm'; 
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -18,48 +19,73 @@ const Dashboard = () => {
     totalSegments: 0,
   });
 
-  const fetchStats = async () => {
-    try {
-      const res = await axios.get(`/api/campaigns/stats/${user.sub}`);
-      const segments = await getAllSegments(user.sub);
-      
+  const [campaigns, setCampaigns] = useState([]);  
+  const [showForm, setShowForm] = useState(false); 
+ 
 
-      setStats({
-        totalCampaigns: res.data.totalCampaigns,
-        totalAudience: res.data.totalAudience,
-        successRate: res.data.successRate,
-        failRate: res.data.failRate,
-        totalSegments: segments.length,
-      });
+const fetchStats = async () => {
+  try {
+    const res = await axios.get(`/api/campaigns/stats/${user.sub}`);
+    const segments = await getAllSegments(user.sub);
+
+    setStats({
+      totalCampaigns: res.data.totalCampaigns,
+      totalAudience: res.data.totalAudience,
+      successRate: res.data.successRate,
+      failRate: res.data.failRate,
+      totalSegments: segments.length,
+    });
+
+    //  Save fetched campaigns
+    setCampaigns(res.data.campaigns);
+  } catch (err) {
+    console.error('Failed to fetch campaign stats', err);
+  }
+};
+
+
+  const fetchCampaigns = async () => {
+    try {
+      const res = await axios.get(`/api/campaigns/${user.sub}`);
+      setCampaigns(res.data);
     } catch (err) {
-      console.error('Failed to fetch campaign stats', err);
+      console.error('Failed to fetch campaigns', err);
     }
   };
 
   useEffect(() => {
-    if (user?.sub) fetchStats();
+    if (user?.sub) {
+      fetchStats();
+      fetchCampaigns();
+    }
   }, [user]);
 
   const [aiInsights, setAiInsights] = useState('');
-const [loadingInsights, setLoadingInsights] = useState(false);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
-const fetchAIInsights = async () => {
-  try {
-    setLoadingInsights(true);
-    const res = await axios.post('/api/insights/generate', { userId: user.sub });
-    setAiInsights(res.data.insights);
-  } catch (err) {
-    console.error('Failed to fetch AI insights', err);
-    setAiInsights('No insights available.');
-  } finally {
-    setLoadingInsights(false);
-  }
-};
+  const fetchAIInsights = async () => {
+    try {
+      setLoadingInsights(true);
+      const res = await axios.post('/api/insights/generate', { userId: user.sub });
+      setAiInsights(res.data.insights);
+    } catch (err) {
+      console.error('Failed to fetch AI insights', err);
+      setAiInsights('No insights available.');
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
 
-useEffect(() => {
-  if (user) fetchAIInsights();
-}, [user]);
+  useEffect(() => {
+    if (user) fetchAIInsights();
+  }, [user]);
 
+  const handleCampaignCreated = async () => {
+    await fetchStats();      // Update dashboard numbers
+    await fetchCampaigns();  // Update campaign list
+    await fetchAIInsights(); // Refresh insights
+    setShowForm(false);      // Hide form
+  };
 
   return (
     <div className="dashboard-wrapper">
@@ -86,7 +112,7 @@ useEffect(() => {
         </div>
         <div className="stat-card">
           <h3>Success / Fail %</h3>
-          <p> {stats.successRate}% /  {stats.failRate}%</p>
+          <p>{stats.successRate}% / {stats.failRate}%</p>
         </div>
       </section>
 
@@ -98,28 +124,35 @@ useEffect(() => {
       <section className="campaigns-section">
         <div className="campaigns-header">
           <h2>Past Campaigns</h2>
-          <button className="new-campaign-btn">+ New Campaign</button>
+          <button className="new-campaign-btn" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Cancel' : '+ New Campaign'}
+          </button>
         </div>
-        <CampaignList campaigns={[]} onCampaignChange={fetchStats} />
+
+        {showForm && (
+          <CampaignForm onCampaignCreated={handleCampaignCreated} />
+        )}
+
+        <CampaignList campaigns={campaigns} />
       </section>
 
       <section className="ai-insight-section">
-  <div className="ai-insight-header">
-    <h2>Smart AI Insights</h2>
-    <button className="refresh-ai-btn" onClick={fetchAIInsights}>🔄 Refresh</button>
-  </div>
-  {loadingInsights ? (
-    <p>Generating insights...</p>
-  ) : (
-    <div className="ai-box">
-      {aiInsights ? aiInsights.split('\n').map((line, i) => (
-        <p key={i}>• {line.trim()}</p>
-      )) : <p>No insights available.</p>}
-    </div>
-  )}
-</section>
-
-
+        <div className="ai-insight-header">
+          <h2>Smart AI Insights</h2>
+          <button className="refresh-ai-btn" onClick={fetchAIInsights}>🔄 Refresh</button>
+        </div>
+        {loadingInsights ? (
+          <p>Generating insights...</p>
+        ) : (
+          <div className="ai-box">
+            {aiInsights
+              ? aiInsights.split('\n').map((line, i) => (
+                  <p key={i}>• {line.trim()}</p>
+                ))
+              : <p>No insights available.</p>}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

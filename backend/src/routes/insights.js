@@ -15,6 +15,10 @@ router.post('/generate', async (req, res) => {
     const segments = await Segment.find({ userId });
     const campaigns = await Campaign.find({ userId });
 
+    if (!segments.length && !campaigns.length) {
+      return res.status(200).json({ insights: 'No segments or campaigns found to generate insights.' });
+    }
+
     const prompt = `
 You are a CRM AI assistant. Based on the following user data, generate 3 smart insights to improve their marketing campaigns:
 
@@ -37,5 +41,6 @@ Respond with bullet points only.
     res.status(500).json({ error: 'Failed to generate insights' });
   }
 });
+
 
 module.exports = router;

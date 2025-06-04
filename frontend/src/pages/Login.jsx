@@ -5,7 +5,7 @@ import useAuth from '../hooks/useAuth';
 import '../styles/Login.css';
 
 const Login = () => {
-  const { handleLoginSuccess } = useAuth(); // ✅ use context method
+  const { handleLoginSuccess } = useAuth(); 
   const navigate = useNavigate();
 
   return (
@@ -16,8 +16,8 @@ const Login = () => {
         <div className="login-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              handleLoginSuccess(credentialResponse); // ✅ update context
-              navigate('/dashboard'); // ✅ redirect
+              handleLoginSuccess(credentialResponse); 
+              navigate('/dashboard'); 
             }}
             onError={() => {
               console.log('Login Failed');

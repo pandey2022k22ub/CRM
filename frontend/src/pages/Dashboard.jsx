@@ -69,7 +69,7 @@ const fetchStats = async () => {
   try {
     setLoadingInsights(true);
     
-    const res = await axios.post('http://localhost:5000/api/insights/generate', { userId: user.sub });
+    const res = await axios.post('https://crm-91or.onrender.com/api/insights/generate', { userId: user.sub });
     console.log('AI insights response:', res.data); // 
     setAiInsights(res.data.insights);
   } catch (err) {

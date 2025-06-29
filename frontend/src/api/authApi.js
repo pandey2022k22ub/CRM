@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000https://crm-91or.onrender.com';
+const API_BASE = import.meta.env.VITE_BACKEND_URL || 'https://crm-91or.onrender.com';
 
 export const loginWithGoogle = () => {
   window.location.href = `${API_BASE}/auth/google`;

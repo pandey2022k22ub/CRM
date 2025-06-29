@@ -8,8 +8,9 @@ import {
   deleteSegment
 } from '../api/segmentApi';
 import '../styles/SegmentBuilder.css';
+// import '../images/crm-logo.jpg'; // Importing the logo for styling
 
-const SegmentBuilder = ({ onSegmentChange }) => { // ✅ Accept prop
+const SegmentBuilder = ({ onSegmentChange }) => { //  Accept prop
   const { user } = useAuth();
   const [name, setName] = useState('');
   const [rules, setRules] = useState({ age: '', gender: '', location: '', interest: '' });
@@ -69,14 +70,22 @@ const SegmentBuilder = ({ onSegmentChange }) => { // ✅ Accept prop
       await deleteSegment(id);
       setSegments(segments.filter(s => s._id !== id));
 
-      // ✅ Trigger stat refresh
+      //  Trigger stat refresh
       if (onSegmentChange) onSegmentChange();
     } catch (err) {
       console.error('Error deleting segment:', err);
     }
   };
+  // export default function { ()=>
+  //   const [steps,stepCounter] = useState(0)
+  //   const incerementStep = () => {
+  //     stepCounter(steps + 1);
+  //   }
+
 
   return (
+
+    
     <div className="segment-builder">
       <h2>{editingId ? 'Edit Segment' : 'Create Segment'}</h2>
       <form onSubmit={handleSubmit}>
@@ -111,7 +120,7 @@ const SegmentBuilder = ({ onSegmentChange }) => { // ✅ Accept prop
           value={rules.interest}
           onChange={(e) => setRules({ ...rules, interest: e.target.value })}
         />
-        <button type="submit">{editingId ? 'Update Segment' : 'Save Segment'}</button>
+        <button className = 'save-seg-btn' type="submit">{editingId ? 'Update Segment' : 'Save Segment'}</button>
       </form>
 
       <hr />
@@ -126,7 +135,7 @@ const SegmentBuilder = ({ onSegmentChange }) => { // ✅ Accept prop
           {segments.map((seg) => (
             <li key={seg._id}>
               <strong>{seg.name}</strong> - Age: {seg.rules.age}, Gender: {seg.rules.gender}, Location: {seg.rules.location}, Interest: {seg.rules.interest}
-              <div>
+              <div className='segement-buttons'>
                 <button onClick={() => handleEdit(seg)}>Edit</button>
                 <button onClick={() => handleDelete(seg._id)}>Delete</button>
               </div>
@@ -135,6 +144,7 @@ const SegmentBuilder = ({ onSegmentChange }) => { // ✅ Accept prop
         </ul>
       )}
     </div>
+    
   );
 };
 

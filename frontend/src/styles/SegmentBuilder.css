@@ -13,6 +13,7 @@
 .segment-builder form {
   display: flex;
   flex-direction: column;
+  width: 30%;
   gap: 10px;
 }
 
@@ -33,4 +34,19 @@
 
 .segment-builder button:hover {
   background-color: #0056b3;
+ 
+}
+.segement-buttons{
+  display: flex;
+  gap: 30px;;
+  margin-top: 20px;
+}
+.save-seg-btn{
+  background-color: #28a745;
+  color: white;
+  padding: 2px;
+  width: 130px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }

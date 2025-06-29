@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getAllSegments } from '../api/segmentApi'; 
+import { getAllCampaigns } from '../api/campaignApi';
 
 import useAuth from '../hooks/useAuth';
 import SegmentBuilder from '../components/SegmentBuilder';
@@ -27,6 +28,7 @@ const fetchStats = async () => {
   try {
     const res = await axios.get(`/api/campaigns/stats/${user.sub}`);
     const segments = await getAllSegments(user.sub);
+    const allCampaigns = await getAllCampaigns(user.sub);
 
     setStats({
       totalCampaigns: res.data.totalCampaigns,
@@ -37,7 +39,7 @@ const fetchStats = async () => {
     });
 
     //  Save fetched campaigns
-    setCampaigns(res.data.campaigns);
+    setCampaigns(allCampaigns);
   } catch (err) {
     console.error('Failed to fetch campaign stats', err);
   }
@@ -64,17 +66,20 @@ const fetchStats = async () => {
   const [loadingInsights, setLoadingInsights] = useState(false);
 
   const fetchAIInsights = async () => {
-    try {
-      setLoadingInsights(true);
-      const res = await axios.post('/api/insights/generate', { userId: user.sub });
-      setAiInsights(res.data.insights);
-    } catch (err) {
-      console.error('Failed to fetch AI insights', err);
-      setAiInsights('No insights available.');
-    } finally {
-      setLoadingInsights(false);
-    }
-  };
+  try {
+    setLoadingInsights(true);
+    
+    const res = await axios.post('http://localhost:5000/api/insights/generate', { userId: user.sub });
+    console.log('AI insights response:', res.data); // 
+    setAiInsights(res.data.insights);
+  } catch (err) {
+    console.error('Failed to fetch AI insights', err);
+    setAiInsights('No insights available.');
+  } finally {
+    setLoadingInsights(false);
+  }
+};
+
 
   useEffect(() => {
     if (user) fetchAIInsights();
@@ -83,8 +88,8 @@ const fetchStats = async () => {
   const handleCampaignCreated = async () => {
     await fetchStats();      // Update dashboard numbers
     await fetchCampaigns();  // Update campaign list
-    await fetchAIInsights(); // Refresh insights
-    setShowForm(false);      // Hide form
+    await fetchAIInsights(); 
+    setShowForm(false);      
   };
 
   return (
@@ -115,8 +120,9 @@ const fetchStats = async () => {
           <p>{stats.successRate}% / {stats.failRate}%</p>
         </div>
       </section>
-
+      <div></div>
       <section className="segment-builder-section">
+
         <h2>Segment Builder</h2>
         <SegmentBuilder onSegmentChange={fetchStats} />
       </section>
@@ -128,6 +134,7 @@ const fetchStats = async () => {
             {showForm ? 'Cancel' : '+ New Campaign'}
           </button>
         </div>
+        
 
         {showForm && (
           <CampaignForm onCampaignCreated={handleCampaignCreated} />

@@ -1,19 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { Configuration, OpenAIApi } = require('openai');
+const {GoogleGenAI} = require('@google/genai');
 const Segment = require('../models/Segment');
 const Campaign = require('../models/Campaign');
 
-const openai = new OpenAIApi(new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-}));
+// ✅ Initialize Gemini SDK with API Key
+const genAI = new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
 
 router.post('/generate', async (req, res) => {
   const { userId } = req.body;
+  console.log('AI Insights requested for user:', userId);
 
   try {
-    const segments = await Segment.find({ userId });
+    const segments = await Segment.find({ "rules.userId": userId });
     const campaigns = await Campaign.find({ userId });
+
+    console.log('Segments found:', segments.length);
+    console.log('Campaigns found:', campaigns.length);
 
     if (!segments.length && !campaigns.length) {
       return res.status(200).json({ insights: 'No segments or campaigns found to generate insights.' });
@@ -28,19 +31,23 @@ Campaigns: ${JSON.stringify(campaigns, null, 2)}
 Respond with bullet points only.
     `;
 
-    const response = await openai.createChatCompletion({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-    });
+    // ✅ Call Gemini model correctly
+    const response = await genAI.models.generateContent({
+    model: 'gemini-2.0-flash-001',
+    contents: prompt,
+    
+  });
+  console.log(response.text);
+    const text = response.text;
 
-    const aiText = response.data.choices[0].message.content;
-    res.json({ insights: aiText });
+
+    console.log('AI Insights generated:\n', text);
+    res.json({ insights: text });
+
   } catch (err) {
-    console.error('AI insight error:', err);
-    res.status(500).json({ error: 'Failed to generate insights' });
+    console.error('Gemini AI insight error:', err.message || err);
+    res.status(500).json({ error: 'Failed to generate insights from Gemini' });
   }
 });
-
 
 module.exports = router;
